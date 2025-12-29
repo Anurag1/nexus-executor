@@ -1,0 +1,77 @@
+#!/bin/bash
+# install.sh - Complete installation script for Nexus Executor
+
+echo "Installing Nexus Executor Unified Hierarchy System..."
+
+# Create virtual environment
+echo "Creating virtual environment..."
+python3 -m venv nexus-env
+source nexus-env/bin/activate
+
+# Upgrade pip
+echo "Upgrading pip..."
+pip install --upgrade pip
+
+# Install core dependencies (minimal set to start)
+echo "Installing core dependencies..."
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+pip install transformers openai anthropic cohere replicate
+pip install fastapi uvicorn websockets pydantic
+pip install networkx graphviz plotly dash
+pip install numpy pandas scikit-learn scipy
+pip install jax[cpu] optuna
+pip install z3-solver pysmt sympy
+pip install sqlalchemy redis pymongo
+pip install prometheus-client loguru
+pip install docker kubernetes boto3
+pip install pytest pytest-asyncio pytest-cov
+pip install black flake8 mypy isort
+pip install jupyter ipython matplotlib seaborn
+
+# Install optional dependencies based on hardware
+echo "Checking hardware and installing optimizations..."
+if command -v nvidia-smi &> /dev/null; then
+    echo "NVIDIA GPU detected, installing CUDA optimizations..."
+    pip install cupy-cuda12x xformers flash-attn bitsandbytes
+    pip install triton onnxruntime-gpu
+fi
+
+# Install remaining requirements
+echo "Installing remaining requirements..."
+pip install -r requirements.txt
+
+# Setup pre-commit hooks
+echo "Setting up pre-commit hooks..."
+pre-commit install
+
+# Create necessary directories
+echo "Creating project structure..."
+mkdir -p data models logs cache
+mkdir -p ueir/graphs ueir/templates ueir/optimized
+mkdir -p hardware/drivers hardware/simulators
+mkdir -p constraints/formal constraints/safety constraints/verification
+
+# Initialize database
+echo "Initializing databases..."
+python -c "from core.database import init_db; init_db()"
+
+# Download pre-trained models
+echo "Downloading pre-trained models..."
+python -c "from core.models.download import download_models; download_models()"
+
+# Run initial tests
+echo "Running initial tests..."
+pytest tests/ -v
+
+echo ""
+echo "✅ Nexus Executor installation complete!"
+echo ""
+echo "To start the system:"
+echo "  source nexus-env/bin/activate"
+echo "  python main.py"
+echo ""
+echo "Or start the chatbot:"
+echo "  cd interfaces/chatbot && python main.py"
+echo ""
+echo "Access the dashboard at: http://localhost:8080"
+echo "API documentation at: http://localhost:8000/docs"
