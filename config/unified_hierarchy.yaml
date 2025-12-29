@@ -1,0 +1,97 @@
+# config/unified_hierarchy.yaml
+unified_hierarchy:
+  # Existing AI Models Configuration
+  existing_models:
+    llm:
+      model: "gpt-4"
+      endpoint: "${OPENAI_ENDPOINT}"
+      capabilities:
+        - intent_understanding
+        - pattern_recognition
+        - constraint_inference
+    
+    code_generator:
+      model: "codex"
+      fallback_enabled: true
+    
+    multimodal:
+      enabled: true
+      models:
+        - clip
+        - dalle
+    
+    search_optimizer:
+      algorithm: "evolutionary"
+      population_size: 100
+      generations: 50
+  
+  # New Execution System Configuration
+  execution_system:
+    ueir:
+      version: "1.0"
+      graph_format: "binary"
+      optimization_levels:
+        - energy
+        - cost
+        - performance
+        - safety
+    
+    hardware_abstraction:
+      supported_platforms:
+        - aws
+        - gcp
+        - azure
+        - on_prem
+        - edge
+      
+      energy_models:
+        - simple_linear
+        - detailed_simulation
+        - hardware_telemetry
+    
+    runtime:
+      execution_mode: "adaptive"
+      monitoring_interval: 100  # ms
+      adaptation_threshold: 0.1  # 10% performance deviation
+  
+  # Integration Configuration
+  integration:
+    adapter_layers:
+      intent_adapter:
+        enabled: true
+        mapping_file: "config/intent_mappings.json"
+      
+      constraint_adapter:
+        enabled: true
+        formalization_rules: "config/constraint_rules.json"
+    
+    fallback_strategy:
+      primary: "execution_system"
+      secondary: "existing_llm"
+      tertiary: "human_assistance"
+  
+  # Chatbot Configuration
+  chatbot:
+    interface:
+      type: "websocket"
+      timeout: 30000  # ms
+      
+    response_formats:
+      human: "natural_language"
+      machine: "ueir_json"
+      
+    session_management:
+      ttl: 3600  # seconds
+      max_sessions: 1000
+  
+  # Learning Configuration
+  continuous_learning:
+    enabled: true
+    feedback_loop:
+      collection_interval: 60  # seconds
+      batch_size: 100
+      
+    improvement_strategies:
+      - online_learning
+      - retraining
+      - constraint_refinement
