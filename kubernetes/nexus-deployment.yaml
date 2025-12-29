@@ -1,0 +1,66 @@
+# kubernetes/nexus-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-executor
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nexus-executor
+  template:
+    metadata:
+      labels:
+        app: nexus-executor
+    spec:
+      containers:
+      - name: nexus-core
+        image: nexus/executor:latest
+        ports:
+        - containerPort: 8000
+        - containerPort: 8080
+        resources:
+          limits:
+            nvidia.com/gpu: 2
+            memory: "16Gi"
+            cpu: "8"
+          requests:
+            nvidia.com/gpu: 1
+            memory: "8Gi"
+            cpu: "4"
+        env:
+        - name: OPENAI_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: api-secrets
+              key: openai-endpoint
+        - name: HARDWARE_DB_ENDPOINT
+          value: "postgres://hardware-db:5432"
+        volumeMounts:
+        - name: model-storage
+          mountPath: /app/models
+        - name: data-storage
+          mountPath: /app/data
+      volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: model-pvc
+      - name: data-storage
+        persistentVolumeClaim:
+          claimName: data-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-service
+spec:
+  selector:
+    app: nexus-executor
+  ports:
+  - name: api
+    port: 8000
+    targetPort: 8000
+  - name: frontend
+    port: 8080
+    targetPort: 8080
+  type: LoadBalancer
